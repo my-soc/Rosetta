@@ -4,7 +4,6 @@ from .converters import cef_to_json
 from faker import Faker
 import requests
 import random
-import json
 
 fake = Faker()
 
