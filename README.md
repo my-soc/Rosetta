@@ -1,3 +1,11 @@
+[![made-with](https://img.shields.io/badge/Built%20with-grey)]()
+[![made-with-Python](https://img.shields.io/badge/Python-blue)](https://www.python.org/)
+[![made-with-FastAPI](https://img.shields.io/badge/FastAPI-green)](https://fastapi.tiangolo.com/)
+[![made-with-GraphQL](https://img.shields.io/badge/GraphQL-red)](https://graphql.org/)
+[![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+<img  align="left" src="img/logo.svg" width="30%" alt="Rosetta"> 
+
 # Rosetta
 Rosetta is a tiny GraphQL API service to fake log messages in different formats and convert between those formats.
 
