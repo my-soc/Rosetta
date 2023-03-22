@@ -222,27 +222,37 @@ class ConvertCEFOutput:
 class Query:
     @strawberry.field
     def convert_cef_to_json(self, cef_log: str) -> ConvertCEFOutput:
+        # A query to convert cef code line to json dictionary
         json_log = cef_to_json(cef_log)
         return ConvertCEFOutput(json_log=json_log)
 
     @strawberry.field
     def generate_fake_syslog_message(self) -> str:
+        # A query to generate random syslog message, the message represent a fake risky command
+        # execution on a unix server.
         return generate_fake_syslog_message()
 
     @strawberry.field
     def generate_fake_cef_message(self) -> str:
+        # A query to generate random cef message, the message represent a fake firewall log of
+        # allowed or denied access to a malicious ip address.
         return generate_fake_cef_message()
 
     @strawberry.field
     def generate_fake_leef_message(self) -> str:
+        # A query to generate random leef message, the message represent a fake web request log,
+        # a random request URL is generated to simulated one of the OWASP10 attack techniques .
         return generate_fake_leef_message()
 
     @strawberry.field
     def generate_fake_winevent_message(self) -> str:
+        # A query to generate random windows security event message, the message represent a fake user action
+        # that simulates an attack technique like Credential Dumping, Process Injection and more  .
         return generate_fake_winevent_message()
 
     @strawberry.field
     def generate_fake_json_message(self) -> str:
+        # A query to generate random json event message, the message represent a fake vulnerability  found event.
         return generate_fake_json_message()
 
 
