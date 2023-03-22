@@ -24,7 +24,7 @@ Rosetta is a tiny GraphQL API service to fake log messages in different formats 
 - Run the image `docker run --name rosetta -p 8000:8000 -d rosetta`
 
 ## Run a Ready Container
-- You can run a ready container: `docker run aymanam/rosetta:latest`
+- You can run a ready container: `docker run --name rosetta -p 8000:8000 -d aymanam/rosetta:latest`
 
 ## Available Queries
 
