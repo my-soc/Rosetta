@@ -7,7 +7,8 @@
 <img  align="left" src="img/rosetta-logo.svg" width="30%" alt="Rosetta"> 
 
 # Rosetta
-Rosetta is a tiny GraphQL API service to fake log messages in different formats and convert between those formats.
+Rosetta is a tiny GraphQL API service to fake log messages in different formats and convert one log format into another, you can use the faker queries to testing your log management parsing and detection rules, please feel free to create issues if something is not working.
+
 
 ## Installation
 
