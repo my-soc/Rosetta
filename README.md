@@ -4,7 +4,7 @@
 [![made-with-GraphQL](https://img.shields.io/badge/GraphQL-red)](https://graphql.org/)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
-<img  align="left" src="img/logo.svg" width="30%" alt="Rosetta"> 
+<img  align="left" src="img/rosetta-logo.svg" width="30%" alt="Rosetta"> 
 
 # Rosetta
 Rosetta is a tiny GraphQL API service to fake log messages in different formats and convert between those formats.
