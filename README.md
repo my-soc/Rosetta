@@ -4,6 +4,7 @@
 [![made-with-GraphQL](https://img.shields.io/badge/GraphQL-red)](https://graphql.org/)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Docker Pulls](https://img.shields.io/docker/pulls/aymanam/rosetta)](https://hub.docker.com/repository/docker/aymanam/rosetta)
+[![slack-community](https://img.shields.io/badge/Slack-4A154C?logo=slack&logoColor=white)](https://go-rosetta.slack.com)
 
 <img  align="left" src="img/rosetta-logo.svg" width="30%" alt="Rosetta"> 
 
