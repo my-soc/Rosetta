@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "12592d5b-e2d2-466e-b390-412317a44deb",
+		"name": "Rosetta",
+		"description": "```\nRosetta is a tiny GraphQL API service to fake log messages in different formats and convert between those formats.\n\n```",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13827492"
+	},
+	"item": [
+		{
+			"name": "cef_to_json",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"query\": \"query ConvertCefToJson($cefLog: String!) { convertCefToJson(cefLog: $cefLog) { jsonLog } }\",\n    \"variables\": { \"cefLog\": \"CEF:0|PANW|FW|v10|Class1b|Traffic|src=10.0.0.1 dst=2.2.2.2 spt=1232\" }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate_random_cef",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"query\": \"{ generateFakeCefMessage }\" }"
+				},
+				"url": {
+					"raw": "http://localhost:8000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate_random_leef",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"query\": \"{ generateFakeLeefMessage }\" }"
+				},
+				"url": {
+					"raw": "http://localhost:8000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate_random_winevent",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"query\": \"{ generateFakeWineventMessage }\" }"
+				},
+				"url": {
+					"raw": "http://localhost:8000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate_random_json",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"query\": \"{ generateFakeJsonMessage }\" }"
+				},
+				"url": {
+					"raw": "http://localhost:8000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate_random_syslog",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"query\": \"{ generateFakeSyslogMessage }\" }"
+				},
+				"url": {
+					"raw": "http://localhost:8000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000"
+				}
+			},
+			"response": []
+		}
+	]
+}
