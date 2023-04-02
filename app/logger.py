@@ -14,7 +14,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
-audit_log_handler = logging.FileHandler("request_audit.log")
+audit_log_handler = logging.FileHandler("app/logs/request_audit.log")
 audit_log_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 audit_log_handler.setLevel(logging.INFO)
 

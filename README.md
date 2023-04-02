@@ -9,10 +9,10 @@
 
 # Rosetta
 Rosetta is a research project for machine learning applications in the cybersecurity space. The main interface to the project is a GraphQL API service with query capabilities to automate the following:
-1- Fake log messages in different formats.
-2- Convert one log format into another.
-4- Training a machine learning models on your own data.
-3- Test pre-trained and your own machine learning models.
+- Fake log messages in different formats.
+- Convert one log format into another.
+- Train a machine learning models on your own data.
+- Test pre-trained and your own machine learning models.
 
 
 ## Installation
@@ -37,58 +37,87 @@ testing your GraphQL queries. Type queries into this side of the screen, and you
 You can also click on the Explorer page to view a list of the available queries:
 
 ### Log Converters
-Converter queries can be used to convert a log from one format to another.
+`convertLogEntry` query can be used to convert a log from one format to another.
 
-#### convertCefToJson
+#### CEF to JSON
 ***
-A query to convert cef code line to json dictionary.
+Below is an example to convert a Cef to JSON example.
 
 ##### A curl example:
 
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---datasets '{
-    "query": "query ConvertCefToJson($cefLog: String!) { convertCefToJson(cefLog: $cefLog) { jsonLog } }",
-    "variables": { "cefLog": "CEF:0|PANW|FW|v10|Class1b|Traffic|src=10.0.0.1 dst=2.2.2.2 spt=1232" }
-}'
+--data '{"query": "query ConvertLogEntry($conversion_type: String!, $log_entry: String!) { convertLogEntry(conversionType: $conversion_type, logEntry: $log_entry) { conversionType, logEntry, convertedLogEntry } }", "variables": { "conversion_type": "cef_to_json", "log_entry": "CEF:0|Security|Intrusion Detection System|1.0|Alert|10|src=192.168.0.1 dst=192.168.0.2 act=blocked" } 
+}
+'
 ```
 Example output:
 ```json
 {
     "data": {
-        "convertCefToJson": {
-            "jsonLog": "{'version': 'CEF:0', 'device_vendor': 'PANW', 'device_product': 'FW', 'device_version': 'v10', 'device_event_class_id': 'Class1b', 'name': 'Traffic', 'extensions': {'src': '10.0.0.1', 'dst': '2.2.2.2', 'spt': '1232'}}"
+        "convertLogEntry": {
+            "conversionType": "cef_to_json",
+            "logEntry": "CEF:0|Security|Intrusion Detection System|1.0|Alert|10|src=192.168.0.1 dst=192.168.0.2 act=blocked",
+            "convertedLogEntry": "{'version': 'CEF:0', 'device_vendor': 'Security', 'device_product': 'Intrusion Detection System', 'device_version': '1.0', 'device_event_class_id': 'Alert', 'name': '10', 'extensions': {'src': '192.168.0.1', 'dst': '192.168.0.2', 'act': 'blocked'}}"
+        }
+    }
+}
+```
+
+#### CEF to LEEF
+***
+Below is an example to convert a Cef to LEEF example.
+
+##### A curl example:
+
+```bash
+curl --location 'http://localhost:8000' \
+--header 'Content-Type: application/json' \
+--data '{"query": "query ConvertLogEntry($conversion_type: String!, $log_entry: String!) { convertLogEntry(conversionType: $conversion_type, logEntry: $log_entry) { conversionType, logEntry, convertedLogEntry } }", "variables": { "conversion_type": "cef_to_leef", "log_entry": "CEF:0|Security|Intrusion Detection System|1.0|Alert|10|src=192.168.0.1 dst=192.168.0.2 act=blocked" } 
+}
+'
+```
+Example output:
+```json
+{
+    "data": {
+        "convertLogEntry": {
+            "conversionType": "cef_to_leef",
+            "logEntry": "CEF:0|Security|Intrusion Detection System|1.0|Alert|10|src=192.168.0.1 dst=192.168.0.2 act=blocked",
+            "convertedLogEntry": "LEEF=1.0!Vendor=Security!Product=Intrusion Detection System!Version=1.0!EventID=Alert!Name=10!src=192.168.0.1!dst=192.168.0.2!act=blocked"
         }
     }
 }
 ```
 
 ### Log Fakers
-Faker queries to generate fake logs in different log formats.
+`generateFakeMessages` query can be used to generate fake logs in different log formats.
 
-#### generateFakeSyslogMessage
+#### Generate Fake Syslog Messages
 ***
-A query to generate random syslog message, the message represent a fake risky command  execution on a unix server.
+A query to generate random syslog message, the message represent a fake risky command execution on a unix server.
 
 ##### A curl example:
 
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---datasets '{ "query": "{ generateFakeJsonMessage }" }'
+--data '{ "query": "{ generateFakeMessages {syslog}}" }'
 ```
 Example output:
 ```json
 {
     "data": {
-        "generateFakeSyslogMessage": "Jan 26 23:34:40 email-18.leonard.com sudo[16150]: pkramer : COMMAND ; cat /etc/shadow"
+        "generateFakeMessages": {
+            "syslog": "Jan 30 17:34:36 desktop-59.gordon.com sudo[9190]: mcdonaldjames : COMMAND ; chown -R nobody:nogroup /"
+        }
     }
 }
 ```
 
 
-#### generateFakeWineventMessage
+#### Generate Fake Winevent Message
 ***
 A query to generate random windows security event message, the message represent a fake user action that simulates an attack technique like Credential Dumping, Process Injection and more.
 
@@ -97,19 +126,21 @@ A query to generate random windows security event message, the message represent
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---datasets '{ "query": "{ generateFakeWineventMessage }" }'
+--data '{ "query": "{ generateFakeMessages {winevent}}" }'
 ```
 Example output:
 ```json
 {
     "data": {
-        "generateFakeWineventMessage": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\"><System><Provider Name=\"Microsoft-Windows-Security-Auditing\" Guid=\"1c20189b-d61e-419d-9b50-3e06683f5acb\"/><EventID>4624</EventID><Version>0</Version><Level>0</Level><Task>12544</Task><Opcode>0</Opcode><Keywords>0x8020000000000000</Keywords><TimeCreated SystemTime=\"2023-02-15T15:47:58\"/><EventRecordID>8697</EventRecordID><Correlation/><Execution ProcessID=\"4883\" ThreadID=\"7882\" Channel=\"Security\"/><Computer>web-73.frost-thompson.org</Computer><Security UserID=\"b696f2a8-0c9b-4fc7-8c47-04e8ea2282a2\"/><EventData><Data Name=\"SubjectUserSid\">8a52fb03-3de2-47ba-a4fe-e91afaefd111</Data><Data Name=\"SubjectUserName\">johncollins</Data><Data Name=\"SubjectDomainName\">russell.com</Data><Data Name=\"SubjectLogonId\">2476</Data><Data Name=\"LogonType\">3</Data><Data Name=\"TargetUserSid\">e49e06a3-a2cf-4d02-9bd6-16e657b5d58d</Data><Data Name=\"TargetUserName\">joyce31</Data><Data Name=\"TargetDomainName\">anderson.com</Data><Data Name=\"ProcessName\">change.odt</Data><Data Name=\"ProcessId\">8903</Data><Data Name=\"DestinationLogonId\">3475</Data><Data Name=\"SourceNetworkAddress\">109.128.234.80</Data><Data Name=\"SourcePort\">7295</Data><Data Name=\"LogonGuid\">fe2f5084-1716-41cc-b413-298ed5a2c80b</Data><Data Name=\"TransmittedServices\">Free far discussion.</Data></EventData></Event>"
+        "generateFakeMessages": {
+            "winevent": "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\"><System><Provider Name=\"Microsoft-Windows-Sysmon\" Guid=\"2f574a88-26bd-49fc-84dd-340cd31bbd2c\"/><EventID>10</EventID><Version>5</Version><Level>4</Level><Task>10</Task><Opcode>0</Opcode><Keywords>0x8000000000000000</Keywords><TimeCreated SystemTime=\"2023-02-05T08:04:35\"/><EventRecordID>3577</EventRecordID><Correlation/><Execution ProcessID=\"7448\" ThreadID=\"8093\" Channel=\"Microsoft-Windows-Sysmon/Operational\"/><EventData><Data Name=\"TargetImage\">C:\\Windows\\System32\\calc.exe</Data><Data Name=\"TargetPID\">7729</Data></EventData></Event>"
+        }
     }
 }
 ```
 
 
-#### generateFakeCefMessage
+#### Generate Fake Cef Message
 ***
 A query to generate random cef message, the message represent a fake firewall log of allowed or denied access to a malicious ip address.
 
@@ -118,19 +149,21 @@ A query to generate random cef message, the message represent a fake firewall lo
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---datasets '{ "query": "{ generateFakeCefMessage }" }'
+--data '{ "query": "{ generateFakeMessages {cef}}" }'
 ```
 Example output:
 ```json
 {
     "data": {
-        "generateFakeCefMessage": "CEF:0|Jenkins PLC|Firewall|1.0.6|ec412a83-5e71-444b-b513-5a217cb4c1a5|Firewall DENY UDP traffic from 48.200.150.28:37022 to 45.190.124.34:21821|3|src=48.200.150.28 spt=37022 dst=45.190.124.34 dpt=21821 proto=UDP act=DENY"
+        "generateFakeMessages": {
+            "cef": "CEF:0|Malone Inc|Firewall|1.0.9|f02f58e0-329c-416a-91af-5dc30a3122d4|Firewall DENY TCP traffic from 83.26.212.221:38596 to     <script src=\"file/components/js/toastr.min.js\"></script>\r:52462|7|src=83.26.212.221 spt=38596 dst=    <script src=\"file/components/js/toastr.min.js\"></script>\r dpt=52462 proto=TCP act=DENY"
+        }
     }
 }
 ```
 
 
-#### generateFakeJsonMessage
+#### Generate Fake Json Message
 ***
 A query to generate random json event message, the message represent a fake vulnerability  found event.
 
@@ -139,19 +172,21 @@ A query to generate random json event message, the message represent a fake vuln
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---datasets '{ "query": "{ generateFakeJsonMessage }" }'
+--data '{ "query": "{ generateFakeMessages {json}}" }'
 ```
 Example output:
 ```json
 {
     "data": {
-        "generateFakeJsonMessage": "{'event_type': 'vulnerability_discovered', 'timestamp': datetime.datetime(2023, 2, 4, 19, 22, 46), 'host_ip': '10.174.170.76', 'severity': 3, 'cve_id': 'CVE-2022-23456', 'cve_description': 'An attacker could exploit this vulnerability by sending a crafted TCP packet to an affected device on a TCP port that is listening.', 'service': 'Cisco IOS XR Software', 'service_version': '7.1'}"
+        "generateFakeMessages": {
+            "json": "{'event_type': 'vulnerability_discovered', 'timestamp': datetime.datetime(2023, 3, 3, 5, 29, 34), 'host_ip': '172.17.62.230', 'severity': 4, 'cve_id': 'CVE-2022-38506', 'cve_description': 'An information disclosure vulnerability exists in the Apache HTTP Server due to an off-by-one error.', 'service': 'Apache HTTP Server', 'service_version': '2.4'}"
+        }
     }
 }
 ```
 
 
-#### generateFakeLeefMessage
+#### Generate Fake Leef Message
 ***
 A query to generate random leef message, the message represent a fake web request log, a random request URL is generated to simulated one of the OWASP10 attack techniques.
 
@@ -160,13 +195,15 @@ A query to generate random leef message, the message represent a fake web reques
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---datasets '{ "query": "{ generateFakeLeefMessage }" }'
+--data '{ "query": "{ generateFakeMessages {leef}}" }'
 ```
 Example output:
 ```json
 {
     "data": {
-        "generateFakeLeefMessage": "LEEF:1.0|Leaf|Payment Portal|1.0|160.39.241.18|27.36.9.144|de:b4:cf:c2:02:8d|aa:8b:2d:6b:c1:3c|src=136.97.179.102 dst=44.62.206.110 spt=10418 dpt=443 request=https://example.com/index.php method=GET proto=HTTP/1.1 status=500 request_size=869 response_size=3851 user_agent=Mozilla/5.0 (iPad; CPU iPad OS 10_3_3 like Mac OS X) AppleWebKit/532.0 (KHTML, like Gecko) FxiOS/9.1o3896.0 Mobile/72X248 Safari/532.0"
+        "generateFakeMessages": {
+            "leef": "LEEF:1.0|Leef|Payment Portal|1.0|88.65.15.118|58.151.206.91|4e:ee:07:fc:8b:8b|da:65:e5:62:0b:b7|src=54.157.136.23 dst=80.76.155.29 spt=16753 dpt=443 request=https://example.com/redirect.php?to=http://malicious.com method=GET proto=HTTP/1.1 status=500 request_size=7080 response_size=9081 user_agent=Mozilla/5.0 (Windows; U; Windows NT 5.01) AppleWebKit/535.20.2 (KHTML, like Gecko) Version/5.0 Safari/535.20.2"
+        }
     }
 }
 ```
