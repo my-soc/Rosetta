@@ -2,14 +2,17 @@
 [![made-with-Python](https://img.shields.io/badge/Python-blue)](https://www.python.org/)
 [![made-with-FastAPI](https://img.shields.io/badge/FastAPI-green)](https://fastapi.tiangolo.com/)
 [![made-with-GraphQL](https://img.shields.io/badge/GraphQL-red)](https://graphql.org/)
-[![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Docker Pulls](https://img.shields.io/docker/pulls/aymanam/rosetta)](https://hub.docker.com/repository/docker/aymanam/rosetta)
 [![slack-community](https://img.shields.io/badge/Slack-4A154C?logo=slack&logoColor=white)](https://go-rosetta.slack.com)
 
 <img  align="left" src="img/rosetta-logo.svg" width="30%" alt="Rosetta"> 
 
 # Rosetta
-Rosetta is a tiny GraphQL API service to fake log messages in different formats and convert one log format into another, you can use the faker queries to testing your log management parsing and detection rules, please feel free to create issues if something is not working.
+Rosetta is a research project for machine learning applications in the cybersecurity space. The main interface to the project is a GraphQL API service with query capabilities to automate the following:
+1- Fake log messages in different formats.
+2- Convert one log format into another.
+4- Training a machine learning models on your own data.
+3- Test pre-trained and your own machine learning models.
 
 
 ## Installation
@@ -45,7 +48,7 @@ A query to convert cef code line to json dictionary.
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---data '{
+--datasets '{
     "query": "query ConvertCefToJson($cefLog: String!) { convertCefToJson(cefLog: $cefLog) { jsonLog } }",
     "variables": { "cefLog": "CEF:0|PANW|FW|v10|Class1b|Traffic|src=10.0.0.1 dst=2.2.2.2 spt=1232" }
 }'
@@ -73,7 +76,7 @@ A query to generate random syslog message, the message represent a fake risky co
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---data '{ "query": "{ generateFakeJsonMessage }" }'
+--datasets '{ "query": "{ generateFakeJsonMessage }" }'
 ```
 Example output:
 ```json
@@ -94,7 +97,7 @@ A query to generate random windows security event message, the message represent
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---data '{ "query": "{ generateFakeWineventMessage }" }'
+--datasets '{ "query": "{ generateFakeWineventMessage }" }'
 ```
 Example output:
 ```json
@@ -115,7 +118,7 @@ A query to generate random cef message, the message represent a fake firewall lo
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---data '{ "query": "{ generateFakeCefMessage }" }'
+--datasets '{ "query": "{ generateFakeCefMessage }" }'
 ```
 Example output:
 ```json
@@ -136,7 +139,7 @@ A query to generate random json event message, the message represent a fake vuln
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---data '{ "query": "{ generateFakeJsonMessage }" }'
+--datasets '{ "query": "{ generateFakeJsonMessage }" }'
 ```
 Example output:
 ```json
@@ -157,7 +160,7 @@ A query to generate random leef message, the message represent a fake web reques
 ```bash
 curl --location 'http://localhost:8000' \
 --header 'Content-Type: application/json' \
---data '{ "query": "{ generateFakeLeefMessage }" }'
+--datasets '{ "query": "{ generateFakeLeefMessage }" }'
 ```
 Example output:
 ```json
@@ -167,3 +170,8 @@ Example output:
     }
 }
 ```
+
+### Training a Machine Learning Model on Your Data
+
+### Test a Machine Learning Model
+

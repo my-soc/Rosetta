@@ -4,7 +4,6 @@ from .converters import cef_to_json
 from faker import Faker
 import requests
 import random
-
 fake = Faker()
 
 # Helper functions
@@ -190,7 +189,7 @@ def generate_fake_json_message():
         {'id': 'CVE-2022-38709', 'service': 'DirectX Graphics', 'version': '12.0', 'description': 'A use after free vulnerability exists in the D3D12 runtime library of the DirectX Graphics component. An attacker who successfully exploited the vulnerability could run arbitrary code in kernel mode.'},
         {'id': 'CVE-2022-38506', 'service': 'Apache HTTP Server', 'version': '2.4', 'description': 'An information disclosure vulnerability exists in the Apache HTTP Server due to an off-by-one error.'},
         {'id': 'CVE-2022-38754', 'service': 'BMC Remedy ITSM', 'version': '9.1', 'description': 'An improper neutralization of special elements in output used by a downstream component (\'Injection\') vulnerability exists in BMC Remedy IT Service Management Suite.'},
-        {'id': 'CVE-2022-12345', 'service': 'MySQL Database Server', 'version': '8.0', 'description': 'An unprivileged user with access to the local system can gain unauthorized access to MySQL Server data.'},
+        {'id': 'CVE-2022-12345', 'service': 'MySQL Database Server', 'version': '8.0', 'description': 'An unprivileged user with access to the local system can gain unauthorized access to MySQL Server datasets.'},
         {'id': 'CVE-2022-23456', 'service': 'Cisco IOS XR Software', 'version': '7.1', 'description': 'An attacker could exploit this vulnerability by sending a crafted TCP packet to an affected device on a TCP port that is listening.'},
         {'id': 'CVE-2022-34567', 'service': 'Git', 'version': '2.30', 'description': 'An arbitrary code execution vulnerability exists in Git when a user configures a large number of glob patterns starting with a character class.'},
         {'id': 'CVE-2022-45678', 'service': 'Docker Engine', 'version': '20.10', 'description': 'An attacker with write access to a bind-mounted directory inside the container can overwrite arbitrary files on the host filesystem.'},
@@ -219,41 +218,38 @@ class ConvertCEFOutput:
 
 
 @strawberry.type
+class FakeLogMessages:
+    syslog: str
+    cef: str
+    leef: str
+    winevent: str
+    json: str
+
+
+@strawberry.type
 class Query:
+    @strawberry.field
+    def generate_fake_messages(self, info) -> FakeLogMessages:
+        # A query to generate random log messages.
+        requested_fields = info.field_nodes[0].selection_set.selections
+        has_requested_fields = any(selection.name.value != "__typename" for selection in requested_fields)
+
+        if not has_requested_fields:
+            raise ValueError("At least one subfield must be specified in the request.")
+
+        return FakeLogMessages(
+            syslog=generate_fake_syslog_message(),
+            cef=generate_fake_cef_message(),
+            leef=generate_fake_leef_message(),
+            winevent=generate_fake_winevent_message(),
+            json=generate_fake_json_message()
+        )
+
     @strawberry.field
     def convert_cef_to_json(self, cef_log: str) -> ConvertCEFOutput:
         # A query to convert cef code line to json dictionary
         json_log = cef_to_json(cef_log)
         return ConvertCEFOutput(json_log=json_log)
-
-    @strawberry.field
-    def generate_fake_syslog_message(self) -> str:
-        # A query to generate random syslog message, the message represent a fake risky command
-        # execution on a unix server.
-        return generate_fake_syslog_message()
-
-    @strawberry.field
-    def generate_fake_cef_message(self) -> str:
-        # A query to generate random cef message, the message represent a fake firewall log of
-        # allowed or denied access to a malicious ip address.
-        return generate_fake_cef_message()
-
-    @strawberry.field
-    def generate_fake_leef_message(self) -> str:
-        # A query to generate random leef message, the message represent a fake web request log,
-        # a random request URL is generated to simulated one of the OWASP10 attack techniques .
-        return generate_fake_leef_message()
-
-    @strawberry.field
-    def generate_fake_winevent_message(self) -> str:
-        # A query to generate random windows security event message, the message represent a fake user action
-        # that simulates an attack technique like Credential Dumping, Process Injection and more  .
-        return generate_fake_winevent_message()
-
-    @strawberry.field
-    def generate_fake_json_message(self) -> str:
-        # A query to generate random json event message, the message represent a fake vulnerability  found event.
-        return generate_fake_json_message()
 
 
 schema = strawberry.Schema(query=Query)
