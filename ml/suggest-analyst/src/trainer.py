@@ -1,5 +1,4 @@
 import json
-from tqdm import tqdm
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder

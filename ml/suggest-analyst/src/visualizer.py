@@ -9,9 +9,9 @@ def plot_data(dataset, incident_type):
 
     incident_data = dataset[dataset['type'] == incident_type]
 
-    incident_counts = incident_data['owner'].value_counts()
+    incident_counts = incident_data['analyst'].value_counts()
 
-    avg_durations = incident_data.groupby('owner')['duration'].mean()
+    avg_durations = incident_data.groupby('analyst')['duration'].mean()
 
     fig, ax = plt.subplots()
     ax.bar(incident_counts.index, incident_counts.values)
@@ -31,7 +31,6 @@ def main():
     with open(DATASET_PATH) as f:
         data = json.load(f)
     dataset = pd.DataFrame(data)
-
     plot_data(dataset=dataset, incident_type=incident_type)
 
 
