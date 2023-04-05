@@ -1,20 +1,34 @@
 import datetime
 from enum import Enum
-from typing import Optional, List, Union, Dict, Any
-from strawberry.scalars import JSON
+import json
+from typing import Optional, List, NewType, Union
+from strawberry.scalars import JSON, Dict
 import strawberry
-from ..modules.events_converters import EventsConverter
-from ..modules.data_faker import DataFaker
-from ..modules.model_trainers import KNNModelTrainer
-
+from classes.events_converters import EventsConverter
+from classes.data_faker import DataFaker
+from classes.model_trainers import KNNModelTrainer
+from typing import Dict, Any
 faker = DataFaker()
 
 # ML Trainer Schema
 
 
+@strawberry.scalar
+class DictScalar:
+    @staticmethod
+    def serialize(value: Dict) -> Dict:
+        return value
+
+    @staticmethod
+    def parse_value(value: Union[Dict, str]) -> Dict:
+        if isinstance(value, str):
+            return json.loads(value)
+        return value
+
+
 @strawberry.input
 class ModelTrainInput:
-    data: str
+    data: JSON
     type: str
 
 
@@ -124,18 +138,15 @@ class Query:
     @strawberry.field
     def ml_model_train(self, request_input: ModelTrainInput) -> Model:
         now = datetime.datetime.now()
-        model_name = f"model_{now.strftime('%Y%m%d_%H%M%S')}"
+        model_name = f"model_{now.strftime('%Y%m%d%H%M%S')}"
         if request_input.type == 'KNN':
             model = KNNModelTrainer(model_name=model_name, dataset_json=request_input.data)
             model.data_preprocessing()
             if model.data_preprocessed:
-                print ('processing done')
                 model.data_transformation()
                 if model.data_transformed:
-                    print('transformation done')
                     model.model_training()
                     if model.is_trained:
-                        print('training done')
                         return Model(model_name=model_name, training_status='Model-Trained', accuracy=model.accuracy)
                     else:
                         return Model(model_name=model_name, training_status='Training-Failed', accuracy='N/A')

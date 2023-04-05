@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from strawberry.asgi import GraphQL
-from .api.schema import schema
-from .logger import RequestLoggingMiddleware
+from app.schema import schema
+from classes.logger import RequestLoggingMiddleware
 
 
 app = FastAPI()
