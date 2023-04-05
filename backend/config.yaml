@@ -1,2 +1,5 @@
 models_dir: models
-models_storage: 10K
+models_storage: 500M
+logging_dir: logs
+logging_storage: 10M
+logging_truncate_limit: 100

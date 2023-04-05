@@ -1,4 +1,5 @@
 import datetime
+import time
 from enum import Enum
 import json
 from typing import Optional, List, NewType, Union
@@ -138,6 +139,7 @@ class Query:
     @strawberry.field
     def ml_model_train(self, request_input: ModelTrainInput) -> Model:
         now = datetime.datetime.now()
+        time.sleep(1)
         model_name = f"model_{now.strftime('%Y%m%d%H%M%S')}"
         if request_input.type == 'KNN':
             model = KNNModelTrainer(model_name=model_name, dataset_json=request_input.data)
