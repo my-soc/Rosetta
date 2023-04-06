@@ -1,12 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from strawberry.asgi import GraphQL
+
 from app.schema import schema
 from classes.logger import RequestLoggingMiddleware
 
 
 app = FastAPI()
-app.add_middleware(RequestLoggingMiddleware)
 app.add_route("/", GraphQL(schema=schema))
+app.add_middleware(RequestLoggingMiddleware)
+
 
 if __name__ == "__main__":
     import uvicorn

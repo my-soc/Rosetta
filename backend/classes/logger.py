@@ -17,13 +17,8 @@ class CEFLogFormatter(logging.Formatter):
         self.signature_id = signature_id
 
     def format(self, record):
-        # Construct the CEF header using the formatter's properties
         cef_header = f"CEF:0|{self.vendor}|{self.product}|{self.version}|{self.signature_id}|{record.msg}|{record.levelno}|"
-
-        # Construct the CEF extension by concatenating the record's attributes
         cef_extension = "|".join(f"{k}={v}" for k, v in record.__dict__.items())
-
-        # Return the complete CEF string
         return f"{cef_header}{cef_extension}"
 
 
@@ -63,13 +58,14 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next) -> Response:
         await self.set_body(request)
-        json_body = await request.json()
-        body_str = json.dumps(json_body)
-        truncated_body = body_str[:Config.LOGGING_TRUNCATE_LIMIT] + "..." if \
-            len(body_str) > Config.LOGGING_TRUNCATE_LIMIT else body_str
-        request_logger = logging.getLogger("request_audit")
-        request_logger.info(
-            f"{request.method} {request.url.path} {request.client.host} {truncated_body}"
-        )
+        if request.method.lower() == "post":
+            json_body = await request.json()
+            body_str = json.dumps(json_body)
+            truncated_body = body_str[:Config.LOGGING_TRUNCATE_LIMIT] + "..." if \
+                len(body_str) > Config.LOGGING_TRUNCATE_LIMIT else body_str
+            request_logger = logging.getLogger("request_audit")
+            request_logger.info(
+                f"{request.method} {request.url.path} {request.client.host} {truncated_body}"
+            )
         response = await call_next(request)
         return response
