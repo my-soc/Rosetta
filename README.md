@@ -4,6 +4,7 @@
 [![made-with-GraphQL](https://img.shields.io/badge/GraphQL-red)](https://graphql.org/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/aymanam/rosetta)](https://hub.docker.com/repository/docker/aymanam/rosetta)
 [![slack-community](https://img.shields.io/badge/Slack-4A154C?logo=slack&logoColor=white)](https://go-rosetta.slack.com)
+[![scanned-with](https://img.shields.io/badge/Scanned%20with-gree)]()
 [![snyk](https://snyk.io/test/github/my-soc/Rosetta/badge.svg)](https://snyk.io/test/github/my-soc/Rosetta)
 ![codeql](https://github.com/my-soc/Rosetta/actions/workflows/github-code-scanning/codeql/badge.svg)
 
