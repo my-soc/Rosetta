@@ -1,21 +1,19 @@
 import datetime
 import time
-from enum import Enum
-import json
-from typing import Optional, List, NewType, Union
+from typing import List
 import strawberry
-from classes.events_converters import EventsConverter
-from classes.data_faker import DataFaker
-from classes.model_trainers import KNNModelTrainer
-from classes.data_sender_worker import DataSenderWorker
-from app.types.data_faker import FakerTypeEnum, DataFakerInput, DataFakerOutput
-from app.types.data_converter import ConverterTypeEnum, ConverterInput, ConverterOutput
-from app.types.ml_trainer import ModelTrainInput, ModelTestInput, ModelOutput, ModelPrediction
-from app.types.data_worker import WorkerTypeEnum, DataWorkerCreateInput, DataWorkerStartInput, DataWorkerStopInput,\
-    DataWorkerStatusInput, DataWorkerOutput
 
-from typing import Dict, Any
-faker = DataFaker()
+from classes.config import Config
+from classes.datafaker import DataFaker
+from classes.converter import EventsConverter
+from classes.trainer import KNNModelTrainer
+from classes.sender import DataSenderWorker
+from app.types.datafaker import FakerTypeEnum, DataFakerInput, DataFakerOutput
+from app.types.converter import ConverterTypeEnum, ConverterInput, ConverterOutput
+from app.types.trainer import ModelTrainEnum, ModelTrainInput, ModelTestInput, ModelOutput, ModelPrediction
+from app.types.sender import WorkerActionEnum, DataWorkerCreateInput, DataWorkerActionInput, DataWorkerOutput, \
+    DataWorkerStatusOutput
+
 workers = {}
 
 
@@ -25,17 +23,17 @@ class Query:
     def generate_fake_data(self, request_input: DataFakerInput) -> DataFakerOutput:
         data = []
         if request_input.type == FakerTypeEnum.SYSLOG:
-            data = faker.generate_fake_syslog_messages(request_input.count)
+            data = DataFaker.generate_fake_syslog_messages(request_input.count)
         elif request_input.type == FakerTypeEnum.CEF:
-            data = faker.generate_fake_cef_messages(request_input.count)
+            data = DataFaker.generate_fake_cef_messages(request_input.count)
         elif request_input.type == FakerTypeEnum.LEEF:
-            data = faker.generate_fake_leef_messages(request_input.count)
+            data = DataFaker.generate_fake_leef_messages(request_input.count)
         elif request_input.type == FakerTypeEnum.WINEVENT:
-            data = faker.generate_fake_winevent_messages(request_input.count)
+            data = DataFaker.generate_fake_winevent_messages(request_input.count)
         elif request_input.type == FakerTypeEnum.JSON:
-            data = faker.generate_fake_json_messages(request_input.count)
+            data = DataFaker.generate_fake_json_messages(request_input.count)
         elif request_input.type == FakerTypeEnum.Incident:
-            data = faker.generate_fake_incidents(request_input.count, request_input.fields)
+            data = DataFaker.generate_fake_incidents(request_input.count, request_input.fields)
 
         return DataFakerOutput(
             data=data,
@@ -60,7 +58,7 @@ class Query:
         time.sleep(1)
         now = datetime.datetime.now()
         model_name = f"model_{now.strftime('%Y%m%d%H%M%S')}"
-        if request_input.type == 'KNN':
+        if request_input.type == ModelTrainEnum.KNN:
             model = KNNModelTrainer(model_name=model_name, dataset_json=request_input.data)
             model.data_preprocessing()
             if model.data_preprocessed:
@@ -89,25 +87,46 @@ class Query:
 
     @strawberry.field
     def data_worker_create(self, request_input: DataWorkerCreateInput) -> DataWorkerOutput:
+        global workers
+        active_workers = {}
+        for worker_id, worker in workers.items():
+            if worker.status == 'Running':
+                active_workers[worker_id] = worker
+        workers = active_workers
+        if len(workers.keys()) >= int(Config.WORKERS_NUMBER):
+            raise Exception("All workers are busy, please stop a running worker.")
         now = datetime.datetime.now()
         worker_name = f"worker_{now.strftime('%Y%m%d%H%M%S')}"
+        created_at = now
         data_worker = DataSenderWorker(worker_name=worker_name, data_type=request_input.type, count=request_input.count,
-                                       destination=request_input.destination, data_faker=faker)
+                                       destination=request_input.destination, created_at=created_at)
         workers[worker_name] = data_worker
         data_worker.start()
-
         return DataWorkerOutput(type=data_worker.data_type, worker=data_worker.worker_name, status=data_worker.status,
-                                destination=data_worker.destination)
+                                destination=data_worker.destination, createdAt=str(data_worker.created_at))
 
     @strawberry.field
     def data_worker_list(self) -> List[DataWorkerOutput]:
         workers_data = []
         for worker in workers.keys():
-            print(workers[worker].data_type)
-            workers_data.append(DataWorkerOutput(type="workers[worker].data_type", worker="workers[worker].worker_name",
-                                                 status="workers[worker].status",
-                                                 destination="workers[worker].destination"))
+            workers_data.append(DataWorkerOutput(type=workers[worker].data_type, worker=workers[worker].worker_name,
+                                                 status=workers[worker].status, destination=workers[worker].destination,
+                                                 createdAt=str(workers[worker].created_at)))
         return workers_data
+
+    @strawberry.field
+    def data_worker_action(self, request_input: DataWorkerActionInput) -> DataWorkerStatusOutput:
+        if workers.get(request_input.worker):
+            if request_input.action == WorkerActionEnum.Stop:
+                workers[request_input.worker].stop()
+                workers.pop(request_input.worker)
+                return DataWorkerStatusOutput(worker=request_input.worker,
+                                              status='Stopped')
+            return DataWorkerStatusOutput(worker=workers[request_input.worker].worker_name,
+                                          status=workers[request_input.worker].status)
+        return DataWorkerStatusOutput(worker=request_input.worker, status="Worker not found.")
 
 
 schema = strawberry.Schema(query=Query)
+
+

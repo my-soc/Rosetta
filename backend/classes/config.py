@@ -5,8 +5,11 @@ class Config:
     with open('config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
-    MODELS_STORAGE_SIZE = config['models_storage']
-    MODELS_DIR = config['models_dir']
-    LOGGING_STORAGE_SIZE = config['logging_storage']
-    LOGGING_DIR = config['logging_dir']
-    LOGGING_TRUNCATE_LIMIT = config['logging_truncate_limit']
+    MODELS_DIR = config.get('ml_training', {}).get('directory', 'models')
+    MODELS_STORAGE_SIZE = config.get('ml_training', {}).get('storage', '500M')
+
+    WORKERS_NUMBER = config.get('workers', {}).get('number', '25')
+
+    LOGGING_DIR = config.get('logging', {}).get('directory', 'logs')
+    LOGGING_STORAGE_SIZE = config.get('logging', {}).get('storage', '10M')
+    LOGGING_TRUNCATE_LIMIT = config.get('logging', {}).get('truncate', '100')

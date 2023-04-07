@@ -1,5 +1,9 @@
-models_dir: models
-models_storage: 500M
-logging_dir: logs
-logging_storage: 10M
-logging_truncate_limit: 100
+ml_training:
+  directory: models
+  storage: 500M
+workers:
+  number: 25
+logging:
+  directory: logs
+  storage: 10M
+  truncate: 1000

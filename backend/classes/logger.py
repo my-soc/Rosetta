@@ -5,6 +5,7 @@ import logging.handlers
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Request
 from starlette.responses import Response
+
 from .config import Config
 
 
@@ -17,7 +18,8 @@ class CEFLogFormatter(logging.Formatter):
         self.signature_id = signature_id
 
     def format(self, record):
-        cef_header = f"CEF:0|{self.vendor}|{self.product}|{self.version}|{self.signature_id}|{record.msg}|{record.levelno}|"
+        cef_header = f"CEF:0|{self.vendor}|{self.product}|{self.version}|{self.signature_id}|{record.msg}|" \
+                     f"{record.levelno}|"
         cef_extension = "|".join(f"{k}={v}" for k, v in record.__dict__.items())
         return f"{cef_header}{cef_extension}"
 
@@ -48,7 +50,8 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         request_audit_logger.setLevel(logging.INFO)
         request_audit_logger.addHandler(audit_rotation_handler)
 
-    async def set_body(self, request: Request):
+    @classmethod
+    async def set_body(cls, request: Request):
         receive_ = await request._receive()
 
         async def receive():
