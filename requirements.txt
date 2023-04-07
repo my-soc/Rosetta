@@ -10,3 +10,4 @@ starlette==0.26.1
 urllib3==1.26.15
 uvicorn==0.21.1
 strawberry-graphql==0.171.1
+wheel>=0.38.0 # not directly required, pinned by Snyk to avoid a vulnerability
