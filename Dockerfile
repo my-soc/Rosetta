@@ -1,4 +1,4 @@
-FROM python:3.10.2-slim-buster
+FROM python:3.12.0a5-slim
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN useradd --create-home rosetta
