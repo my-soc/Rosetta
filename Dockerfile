@@ -1,8 +1,7 @@
-FROM python:3.12.0a5-slim
+FROM python:3.10.11-slim-buster
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN useradd --create-home rosetta
-
 RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
     if ! getent group rosetta > /dev/null 2>&1; then \
         groupadd -g ${GROUP_ID} rosetta; \
