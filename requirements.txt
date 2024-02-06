@@ -1,6 +1,6 @@
 beautifulsoup4==4.12.2
 Faker==18.4.0
-fastapi==0.95.0
+fastapi==0.109.1
 joblib==1.2.0
 pandas==2.0.0
 PyYAML==6.0
